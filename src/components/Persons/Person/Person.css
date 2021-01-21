@@ -1,4 +1,4 @@
-/* .Person {
+.Person {
   width: 60%;
   margin: 16px auto;
   border: 1px solid #eee;
@@ -9,8 +9,8 @@
 
 /* This is one way how you would use media quieries  */
 
-/* @media (min-width: 500px) {
+@media (min-width: 500px) {
   .Person {
     width: 450px;
   }
-} ; */
+} ;

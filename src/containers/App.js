@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import Cockpit from "../components/Cockpit/Cockpit";
 // import styled from "styled-components";  // Styled-components
-import "./App.css";
-import Person from "./Person/Person";
-import BasicInfo from "./BasicInfo/BasicInfo";
+import classes from "./App.css";
+import Persons from "../components/Persons/Persons";
+import BasicInfo from "../components/BasicInfo/BasicInfo";
+import WithClass from "../hoc/WithClass";
+// import ErrorBoundary from "./ErrorBoundary/ErrorBoundary";
 
 // Styled components method
 
@@ -22,36 +25,61 @@ import BasicInfo from "./BasicInfo/BasicInfo";
 
 class App extends Component {
   constructor(props) {
-    super();
-    this.state = {
-      persons: [
-        { id: "aheyu1", name: "Josh", age: 24 },
-        { id: "bdtey7", name: "Ericzander", age: 25 },
-        { id: "lsnvd2", name: "Lewis", age: 26 },
-      ],
-      showPersons: false,
-      // This is the person object for the challenge
-      personAdd: [
-        {
-          id: "f1",
-          name: "Joshua Lewis",
-          number: "3363273654",
-          DOB: "09/26/1996",
-        },
-        {
-          id: "b2",
-          name: "Billy Corgan",
-          number: "123555123",
-          DOB: "03/17/1967",
-        },
-        {
-          id: "c3",
-          name: "John Rzeznik",
-          number: "123555123",
-          DOB: "12/05/1965",
-        },
-      ],
-    };
+    super(props);
+    console.log("[App.js] constructor");
+  }
+
+  state = {
+    persons: [
+      { id: "aheyu1", name: "Josh", age: 24 },
+      { id: "bdtey7", name: "Ericzander", age: 25 },
+      { id: "lsnvd2", name: "Lewis", age: 26 },
+    ],
+    showPersons: false,
+    showCockpit: true,
+    // This is the person object for the challenge
+    personAdd: [
+      {
+        id: "f1",
+        name: "Joshua Lewis",
+        number: "3363273654",
+        DOB: "09/26/1996",
+      },
+      {
+        id: "b2",
+        name: "Billy Corgan",
+        number: "123555123",
+        DOB: "03/17/1967",
+      },
+      {
+        id: "c3",
+        name: "John Rzeznik",
+        number: "123555123",
+        DOB: "12/05/1965",
+      },
+    ],
+  };
+
+  static getDerivedStateFromProps(props, state) {
+    console.log("[App.js] getDerivedStateFromProps", props);
+    return state;
+  }
+
+  // componentWillMount() {
+  //   console.log("[App.js] componentDidMount");
+  // }
+
+  componentDidMount() {
+    console.log("[App.js] componentDidMount");
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("[App.js] shouldComponentUpdate");
+    return true;
+  }
+
+  componentDidUpdate() {
+    console.log("[App.js] componentDidUpdate");
   }
 
   nameChangedHandler = (event, id) => {
@@ -77,6 +105,7 @@ class App extends Component {
     persons.splice(personIndex, 1);
     this.setState({ persons: persons });
   };
+
   // This method is for the iteration of the challenge component
   deleteAddedHandler = (personsIndex) => {
     const personsAdd = this.state.personAdd; // The alternate copy method isn't working.
@@ -91,6 +120,7 @@ class App extends Component {
   };
 
   render() {
+    console.log("[App.js], render");
     // const style = {
     //   backgroundColor: "green",
     //   color: "white",
@@ -106,50 +136,39 @@ class App extends Component {
     // };
 
     let persons = null; // Show nothing when you render the page.
+    // let btnClass = [classes.Button];
 
     if (this.state.showPersons) {
       // UNLESS, this is true. Then run that code for persons
       persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return (
-              <Person
-                click={() => this.deletePersonHandler(index)}
-                name={person.name}
-                age={person.age}
-                key={person.id}
-                changed={(event) => this.nameChangedHandler(event, person.id)}
-              />
-            );
-          })}
-        </div>
+        <Persons
+          persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}
+        />
       );
-      // style.backgroundColor = "red"; // This changes the button color conditionally
-      // style[":hover"] = {
-      //   backgroundColor: "salmon",
-      //   color: "black;",
-      // };
     }
 
     // let classes = ["red", "bold"].join(" "); // "red bold", strange but this works..
-    const classes = []; // Using const because it will always be an array
-    if (this.state.persons.length <= 2) {
-      classes.push("red"); // classes = ['red']
-    }
-    if (this.state.persons.length <= 1) {
-      classes.push("bold"); // classes = ['red', 'bold']
-    }
 
     return (
-      <div className="App">
-        <h1>Hi, I'm a React App</h1>
-        <p className={classes.join(" ")}>This is working also!</p>
+      <WithClass classes={classes.App}>
         <button
-          alt={this.state.showPersons}
-          onClick={this.togglePersonsHandler}
+          onClick={() => {
+            this.setState({ showCockpit: false });
+          }}
         >
-          Toggle Persons
+          Remove Cockpit
         </button>
+        {this.state.showCockpit ? (
+          <Cockpit
+            showPersons={this.state.showPersons}
+            persons={this.state.persons}
+            clicked={this.togglePersonsHandler}
+            title={this.props.appTitle}
+            personsLength={this.state.persons.length}
+          />
+        ) : null}
         {persons}
         <div>
           {this.state.personAdd.map((newPerson, index) => {
@@ -169,7 +188,7 @@ class App extends Component {
             DOB={this.state.personAdd.DOB}
           /> */}
         </div>
-      </div>
+      </WithClass>
     );
 
     // Below is the equivilent to using the JSX above. It's just the breakdown of how it is compiled.

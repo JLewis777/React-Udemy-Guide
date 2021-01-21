@@ -6,4 +6,11 @@
   padding: 16px;
   text-align: center;
   background-color: silver;
+  margin-top: 50px;
 }
+
+@media (min-width: 500px) {
+  .BasicInfo {
+    width: 450px;
+  }
+} ;
